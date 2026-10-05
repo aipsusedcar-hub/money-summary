@@ -14,6 +14,10 @@ function render(){
  $('areasCount').textContent=`${s.areas.length} พื้นที่`;$('campaignsCount').textContent=`${s.campaigns.length} รายการ`;
  $('areas').innerHTML=s.areas.length?s.areas.map(a=>`<div class="area"><div class="area-line"><span>${esc(a.name)}</span><b>฿${fmt(a.amount)}</b></div><div class="track"><div class="bar" style="width:${s.campaignTotal?100*a.amount/s.campaignTotal:0}%"></div></div></div>`).join(''):'<div class="empty"><span>ยังไม่มีข้อมูลพื้นที่</span><p>เพิ่มใบเสร็จเพื่อดูว่าแต่ละพื้นที่ใช้ไปเท่าไร</p></div>';
  $('campaigns').innerHTML=s.campaigns.length?s.campaigns.map(c=>`<tr><td>${esc(c.name)}</td><td class="number">${fmt(c.amount)}</td></tr>`).join(''):'<tr><td colspan="2" class="empty">ยังไม่มีรายการแคมเปญ</td></tr>';
+ const owner=$('owner').value.trim(),bank=$('bank').value.trim(),defaultNote=$('defaultNote').value.trim();
+ $('claimRows').innerHTML=receipts.length?receipts.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(owner||'—')}</td><td>${esc(bank||'—')}</td><td>${esc(r.card||'—')}</td><td>${esc(r.reference||'—')}</td><td>${esc(r.invoice||'—')}</td><td class="number">${fmt(r.total)}</td><td>${esc(r.date.replace(/\s+\d{2}:\d{2}$/,''))}</td><td>${esc(defaultNote||r.note||'—')}</td></tr>`).join(''):'<tr><td colspan="9" class="empty">เพิ่มใบเสร็จเพื่อสร้างตารางเบิกจ่าย</td></tr>';
+ $('claimTotal').textContent=fmt(s.total);
+ $('claimTitle').textContent=receipts.length?`รายการค่า Ads Facebook · ${receipts[0].date.replace(/\s+\d{2}:\d{2}$/,'')}`:'รายการค่า Ads Facebook';
  $('receipts').innerHTML=receipts.length?receipts.map(r=>`<div class="receipt"><div><div class="receipt-name">${esc(r.filename)}</div><div class="receipt-meta">${esc(r.date)} · บัญชี ${esc(r.account)}<br>ID ${esc(r.id)}<br>${esc([...new Set(r.campaigns.map(c=>c.period))].join(' · '))}</div>${r.warnings.map(w=>`<div class="warning">${esc(w)}</div>`).join('')}</div><div class="receipt-amount">฿${fmt(r.total)}</div><button class="remove" data-id="${esc(r.id)}" aria-label="ลบ ${esc(r.filename)}">ลบไฟล์</button></div>`).join(''):'<p class="empty">ใบเสร็จที่อ่านสำเร็จจะแสดงที่นี่</p>';
 }
 async function addFiles(files){
@@ -48,5 +52,7 @@ for(const type of ['dragleave','drop'])$('drop').addEventListener(type,e=>{e.pre
 $('drop').addEventListener('drop',e=>addFiles([...e.dataTransfer.files]));
 document.addEventListener('dragover',e=>e.preventDefault());document.addEventListener('drop',e=>e.preventDefault());
 $('receipts').addEventListener('click',e=>{const b=e.target.closest('button[data-id]');if(!b||busy)return;const index=receipts.findIndex(r=>r.id===b.dataset.id);if(index>=0){receipts.splice(index,1);$('messages').replaceChildren();render();}});
+for(const id of ['owner','bank','defaultNote'])$(id).addEventListener('input',render);
+$('print').addEventListener('click',()=>window.print());
 if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_receipt_summary',title:'อ่านสรุปยอดใบเสร็จ',description:'Read totals grouped by campaign and area from receipts currently imported on this page.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},execute(input){if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).length)throw new Error('Expected an empty object');return {currency:'THB',unit:'satang',...summarize(receipts)};}})).catch(()=>{});}catch{}}
 render();

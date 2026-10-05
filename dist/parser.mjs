@@ -17,6 +17,10 @@ export function parseReceipt(pages,filename) {
   const total=moneyCents(topAmounts[0].str);
   const date=all.match(/(?:^|\n)(\d{1,2}\s+[ก-๙.]+\s+\d{4}\s+\d{2}:\d{2})(?:\n|$)/)?.[1]||'ไม่พบวันที่';
   const account=all.match(/ID บัญชี:\s*(\d+)/)?.[1]||'';
+  const reference=all.match(/หมายเลขอ้างอิง:\s*([^\s]+)/)?.[1]||'';
+  const invoice=all.match(/หมายเลขใบเรียกเก็บเงิน\s*(FBADS-[\d-]+)/)?.[1]||'';
+  const note=all.match(/ใบเสร็จสำหรับ\s*([^\n]+)/)?.[1]||'';
+  const card=all.match(/American Express\s*·+\s*(\d{4})/)?.[1]||'';
   const campaigns=[];
   let detailTotal=0;
   for(let pi=0;pi<pages.length;pi++) {
@@ -44,7 +48,7 @@ export function parseReceipt(pages,filename) {
   if(campaignTotal!==total) warnings.push(`ยอดแคมเปญต่างจากยอดชำระ ${(campaignTotal-total)/100} บาท`);
   if(detailTotal!==campaignTotal) warnings.push('ยอดโฆษณาย่อยไม่ตรงกับยอดแคมเปญ โปรดตรวจไฟล์ต้นฉบับ');
   if(!all.includes('ชำระแล้ว')) warnings.push('ไม่พบข้อความยืนยันว่าชำระแล้ว');
-  return {id,filename,total,date,account,campaigns,campaignTotal,warnings};
+  return {id,filename,total,date,account,reference,invoice,note,card,campaigns,campaignTotal,warnings};
 }
 export function summarize(receipts) {
   const unique=[...new Map(receipts.map(r=>[r.id,r])).values()];
