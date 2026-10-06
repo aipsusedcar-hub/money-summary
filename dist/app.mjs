@@ -73,3 +73,110 @@ for(const id of ['owner','bank'])$(id)?.addEventListener('input',render);
 $('print').addEventListener('click',()=>window.print());
 if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_receipt_summary',title:'อ่านสรุปยอดใบเสร็จ',description:'Read totals grouped by campaign and area from receipts currently imported on this page.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},execute(input){if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).length)throw new Error('Expected an empty object');return {currency:'THB',unit:'satang',...summarize(receipts)};}})).catch(()=>{});}catch{}}
 render();
+// ==========================================
+// ระบบสลับแท็บเอกสาร
+// ==========================================
+const tabBtnDetailed = document.getElementById('tabBtnDetailed');
+const tabBtnInvoice = document.getElementById('tabBtnInvoice');
+const viewDetailed = document.getElementById('viewDetailed');
+const viewInvoice = document.getElementById('viewInvoice');
+
+if (tabBtnDetailed && tabBtnInvoice) {
+  tabBtnDetailed.addEventListener('click', () => {
+    tabBtnDetailed.classList.add('active');
+    tabBtnInvoice.classList.remove('active');
+    viewDetailed.classList.add('active');
+    viewInvoice.classList.remove('active');
+  });
+
+  tabBtnInvoice.addEventListener('click', () => {
+    tabBtnInvoice.classList.add('active');
+    tabBtnDetailed.classList.remove('active');
+    viewInvoice.classList.add('active');
+    viewDetailed.classList.remove('active');
+  });
+}
+
+// ==========================================
+// ฟังก์ชันสร้างตารางใบเบิกจ่ายทางการ (แท็บ 2)
+// ==========================================
+function updateOfficialInvoiceTab() {
+  const tbody = document.getElementById('invoiceRows');
+  const totalEl = document.getElementById('invoiceTotal');
+  if (!tbody) return;
+
+  // ดึงข้อมูลแถวจากตารางเดิมที่ประมวลผลแล้ว
+  const rows = Array.from(document.querySelectorAll('#claimRows tr'));
+  const validRows = rows.filter(tr => !tr.querySelector('.empty') && tr.children.length >= 7);
+
+  if (validRows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" class="empty" style="text-align: center; padding: 20px;">เพิ่มใบเสร็จเพื่อดูใบเบิกจ่าย</td></tr>';
+    if (totalEl) totalEl.textContent = '0.00';
+    return;
+  }
+
+  // แยกกลุ่มข้อมูลตาม หมายเหตุ (คอลัมน์ 9) หรือ หมวดหมู่
+  const groups = {};
+  let overallTotal = 0;
+
+  validRows.forEach(tr => {
+    const tds = tr.children;
+    const amountText = tds[6]?.textContent?.replace(/,/g, '').trim() || '0';
+    const amount = parseFloat(amountText) || 0;
+    const dateText = tds[7]?.textContent?.trim() || '';
+    const noteText = tds[8]?.textContent?.trim() || 'ทั่วไป';
+
+    if (!groups[noteText]) {
+      groups[noteText] = {
+        name: noteText,
+        items: [],
+        dateSample: dateText
+      };
+    }
+
+    groups[noteText].items.push(amount);
+    overallTotal += amount;
+  });
+
+  let html = '';
+  let index = 1;
+
+  for (const [key, grp] of Object.entries(groups)) {
+    // หาเดือน/ปี จากตัวอย่างวันที่
+    const dMatch = grp.dateSample.match(/([ก-๙]+)\s*(\d{4})/);
+    const monthYear = dMatch ? `${dMatch[1]} ${dMatch[2]}` : '';
+
+    let detailHtml = `<b>ค่า Ads Facebook เดือน${monthYear} (${grp.name})</b><br><br>`;
+    detailHtml += `-รวมทั้งหมด ${grp.items.length} รายการ<br>`;
+
+    let amountHtml = `<br><br>`;
+
+    grp.items.forEach(amt => {
+      const amtStr = amt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      detailHtml += `รายละ ${amtStr} บาท จำนวน 1 รายการ<br>`;
+      amountHtml += `${amtStr}<br>`;
+    });
+
+    html += `
+      <tr>
+        <td style="text-align: center; vertical-align: top;">${index++}</td>
+        <td class="sub-line" style="vertical-align: top;">${detailHtml}</td>
+        <td class="number sub-line" style="vertical-align: top;">${amountHtml}</td>
+      </tr>
+    `;
+  }
+
+  tbody.innerHTML = html;
+  if (totalEl) {
+    totalEl.textContent = overallTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+}
+
+// ผูก Observer ตรวจจับเมื่อตารางหลักมีการอัปเดตข้อมูลไฟล์ใหม่
+const claimRowsTbody = document.getElementById('claimRows');
+if (claimRowsTbody) {
+  const observer = new MutationObserver(() => {
+    updateOfficialInvoiceTab();
+  });
+  observer.observe(claimRowsTbody, { childList: true, subtree: true });
+}
