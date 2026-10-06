@@ -1,5 +1,82 @@
 <!doctype html>
-<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สรุปค่าโฆษณา · Recheck</title><meta name="description" content="ลากใบเสร็จ Meta PDF เพื่อรวมยอดชำระและแยกค่าโฆษณาตามพื้นที่และแคมเปญ"><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23132138'/%3E%3Cpath d='M8 17l5 5 11-13' fill='none' stroke='%23cff36a' stroke-width='4'/%3E%3C/svg%3E"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="claim.css"><link rel="stylesheet" href="groups.css"></head>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สรุปค่าโฆษณา · Recheck</title><meta name="description" content="ลากใบเสร็จ Meta PDF เพื่อรวมยอดชำระและแยกค่าโฆษณาตามพื้นที่และแคมเปญ"><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23132138'/%3E%3Cpath d='M8 17l5 5 11-13' fill='none' stroke='%23cff36a' stroke-width='4'/%3E%3C/svg%3E"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="claim.css"><link rel="stylesheet" href="groups.css">
+<style>
+/* บังคับคอลัมน์ไม่ให้ตัวอักษรตกบรรทัด */
+.claim-table th:first-child,
+.claim-table td:first-child {
+  white-space: nowrap !important;
+  min-width: 45px !important;
+  text-align: center !important;
+}
+
+@media print {
+  @page {
+    size: A4 portrait !important;
+    margin: 4mm 5mm !important;
+  }
+
+  html, body {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 9.5px !important;
+  }
+
+  /* ซ่อนส่วนประกอบอื่นทั้งหมด */
+  header, footer, .intro, .drop, .metrics, .workspace, 
+  .receipts, #messages, .print, .claim-note, .eyebrow {
+    display: none !important;
+  }
+
+  .panel.claim {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .claim-head {
+    margin-bottom: 2px !important;
+  }
+
+  .claim-head h2 {
+    font-size: 13px !important;
+    margin: 0 0 3px 0 !important;
+    text-align: center !important;
+  }
+
+  /* ย่อขนาดตารางทั้งตารางให้จบใน 1 หน้า A4 พอดี */
+  .claim-table-wrap {
+    border: none !important;
+    overflow: visible !important;
+    transform-origin: top center !important;
+    transform: scale(0.92) !important; /* ย่อสเกลตารางลง 8% ดึงหน้าที่ 2 กลับขึ้นมาทั้งหมด */
+    width: 108.7% !important;
+    margin-left: -4.3% !important;
+  }
+
+  .claim-table {
+    width: 100% !important;
+    font-size: 9px !important;
+    border-collapse: collapse !important;
+  }
+
+  .claim-table th, 
+  .claim-table td {
+    padding: 1.5px 3px !important; /* บีบระยะห่างแถวให้ชิด */
+    line-height: 1.15 !important;
+    border: 1px solid #999 !important;
+  }
+
+  /* แก้เลขรหัสอ้างอิงและวันที่ไม่ให้ขึ้น 2 บรรทัด */
+  .claim-table td:nth-child(5),
+  .claim-table td:nth-child(6),
+  .claim-table td:nth-child(8) {
+    white-space: nowrap !important;
+    font-size: 8.5px !important;
+  }
+}
+</style>
+</head>
 <body>
 <header><div class="brand"><span class="mark">✓</span> RECHECK <span class="brand-sub">สรุปค่าโฆษณา</span></div><span class="privacy">อ่านไฟล์บนอุปกรณ์ของคุณ</span></header>
 <main>
