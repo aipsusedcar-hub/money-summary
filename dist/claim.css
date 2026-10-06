@@ -1,1 +1,166 @@
-.claim{margin:0 0 22px}.claim-head{padding:22px 25px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line)}.claim-head h2{margin-top:3px}.print{font:inherit;font-size:14px;font-weight:600;background:var(--ink);color:white;border:0;border-radius:8px;padding:10px 16px;cursor:pointer}.claim-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding:18px 25px;background:#fafbfd;border-bottom:1px solid var(--line)}.claim-controls label{font-size:13px;color:var(--muted);font-weight:600}.claim-controls input{font:inherit;font-size:14px;color:var(--ink);background:white;border:1px solid #cfd7e2;border-radius:7px;width:100%;padding:9px 10px;margin-top:5px}.claim-table-wrap{overflow:auto;max-height:520px}.claim-table{min-width:1110px;font-size:13px}.claim-table th{background:#fff3ca;color:#2d2920;font-weight:700;border-bottom:1px solid #d6bd71;position:sticky;top:0;z-index:1}.claim-table td,.claim-table th{padding:11px 12px;vertical-align:top}.claim-table td:first-child,.claim-table th:first-child{text-align:center;width:68px}.claim-table tfoot td{font-size:14px;font-weight:700;background:#ffe7a1;border-top:2px solid #d1aa45;border-bottom:0}.claim-note{font-size:12px;color:var(--muted);padding:12px 25px;margin:0;background:#fff}.claim-table .empty{padding:36px}.claim-table .number{min-width:112px}@media(max-width:850px){.claim-controls{grid-template-columns:1fr}.claim-head{padding:18px}.claim-controls{padding:16px 18px}.claim-note{padding:12px 18px}}@media print{body{background:white;color:#111;font-size:10pt}header,.intro,.drop,#messages,.metrics,.workspace,.receipts,footer,.claim-note,.print{display:none!important}main{max-width:none;padding:0}.claim{border:0;border-radius:0;overflow:visible}.claim-head{padding:0 0 12px;border:0}.claim-controls{grid-template-columns:repeat(3,1fr);padding:8px 0;background:white;border:0}.claim-controls input{border:0;padding:2px 0}.claim-table-wrap{overflow:visible;max-height:none}.claim-table{min-width:0;font-size:8pt}.claim-table th,.claim-table td{padding:6px 5px}.claim-table th{position:static}.claim-table tfoot td{background:#ffe7a1}.claim-head .eyebrow{display:none}}
+.claim {
+  margin-top: 1.5rem;
+}
+
+.claim-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.claim-head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.claim-table-wrap {
+  overflow-x: auto;
+  background: var(--surface, #fff);
+  border-radius: 8px;
+  border: 1px solid var(--border, #e2e8f0);
+}
+
+.claim-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+.claim-table th,
+.claim-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+/* ป้องกันคำว่า ลำดับ ตกบรรทัด */
+.claim-table th:first-child,
+.claim-table td:first-child {
+  white-space: nowrap !important;
+  min-width: 48px;
+  text-align: center;
+}
+
+/* วันที่และตัวเลขไม่ให้ขึ้นบรรทัดใหม่ */
+.claim-table th:nth-child(8),
+.claim-table td:nth-child(8) {
+  white-space: nowrap !important;
+  text-align: center;
+}
+
+.claim-table th.number,
+.claim-table td.number {
+  text-align: right;
+  white-space: nowrap !important;
+}
+
+.claim-table tfoot td {
+  font-weight: bold;
+  background: var(--surface-subtle, #f8fafc);
+}
+
+.claim-note {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted, #64748b);
+}
+
+/* ==========================================
+   ตั้งค่าพิมพ์ / บันทึก PDF ให้อยู่ใน 1 หน้า A4
+   ========================================== */
+@media print {
+  /* ซ่อนสิ่งที่ไม่จำเป็นในการพิมพ์ */
+  header,
+  footer,
+  .intro,
+  .drop,
+  .metrics,
+  .workspace,
+  .receipts,
+  #messages,
+  .print,
+  .claim-note,
+  .eyebrow {
+    display: none !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 6mm 8mm !important; /* ปรับ Margin ขอบกระดาษให้บางลงเพื่อไม่ล้นหน้า */
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .panel.claim {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .claim-head {
+    margin-bottom: 6px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .claim-head h2 {
+    font-size: 13.5pt !important;
+    font-weight: bold !important;
+    margin: 0 !important;
+  }
+
+  .claim-table-wrap {
+    border: 1px solid #333 !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* บีบตารางให้พอดี 1 หน้า */
+  .claim-table {
+    width: 100% !important;
+    font-size: 8pt !important;
+    border-collapse: collapse !important;
+  }
+
+  .claim-table th,
+  .claim-table td {
+    padding: 2.5px 4px !important; /* บีบความสูงของแต่ละแถว */
+    border: 1px solid #cbd5e1 !important;
+    line-height: 1.15 !important;
+  }
+
+  .claim-table th {
+    background-color: #f1f5f9 !important;
+    font-weight: 600 !important;
+  }
+
+  .claim-table tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .claim-table tfoot td {
+    border-top: 2px solid #000 !important;
+    padding: 3.5px 4px !important;
+    font-size: 8.5pt !important;
+  }
+}
