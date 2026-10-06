@@ -31,7 +31,7 @@ function render(){
  $('areasCount').textContent=`${s.areas.length} พื้นที่`;$('campaignsCount').textContent=`${s.campaigns.length} รายการ`;
  $('areas').innerHTML=s.areas.length?s.areas.map(a=>`<div class="area"><div class="area-line"><span>${esc(a.name)}</span><b>฿${fmt(a.amount)}</b></div><div class="track"><div class="bar" style="width:${s.campaignTotal?100*a.amount/s.campaignTotal:0}%"></div></div></div>`).join(''):'<div class="empty"><span>ยังไม่มีข้อมูลพื้นที่</span><p>เพิ่มใบเสร็จเพื่อดูว่าแต่ละพื้นที่ใช้ไปเท่าไร</p></div>';
  $('campaigns').innerHTML=s.campaigns.length?s.campaigns.map(c=>`<tr><td>${esc(c.name)}</td><td class="number">${fmt(c.amount)}</td></tr>`).join(''):'<tr><td colspan="2" class="empty">ยังไม่มีรายการแคมเปญ</td></tr>';
- const owner=$('owner').value.trim(),bank=$('bank').value.trim(),defaultNote=$('defaultNote').value.trim(),entries=claimRows();
+ const owner=$('owner').value.trim(),bank=$('bank').value.trim(),defaultNote=$('defaultNote')?.value.trim()||'',entries=claimRows();
  $('claimRows').innerHTML=renderClaimRows(entries,owner,bank,defaultNote);
  $('claimTotal').textContent=fmt(s.total);
  $('claimTitle').textContent=claimMonthTitle(receipts[0]);
@@ -69,7 +69,7 @@ for(const type of ['dragleave','drop'])$('drop').addEventListener(type,e=>{e.pre
 $('drop').addEventListener('drop',e=>addFiles([...e.dataTransfer.files]));
 document.addEventListener('dragover',e=>e.preventDefault());document.addEventListener('drop',e=>e.preventDefault());
 $('receipts').addEventListener('click',e=>{const b=e.target.closest('button[data-id]');if(!b||busy)return;const index=receipts.findIndex(r=>r.id===b.dataset.id);if(index>=0){receipts.splice(index,1);$('messages').replaceChildren();render();}});
-for(const id of ['owner','bank','defaultNote'])$(id).addEventListener('input',render);
+for(const id of ['owner','bank'])$(id).addEventListener('input',render);
 $('print').addEventListener('click',()=>window.print());
 if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_receipt_summary',title:'อ่านสรุปยอดใบเสร็จ',description:'Read totals grouped by campaign and area from receipts currently imported on this page.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},execute(input){if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).length)throw new Error('Expected an empty object');return {currency:'THB',unit:'satang',...summarize(receipts)};}})).catch(()=>{});}catch{}}
 render();
