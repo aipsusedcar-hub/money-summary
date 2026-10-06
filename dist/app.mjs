@@ -7,6 +7,21 @@ const receipts=[];let busy=false;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function message(text,type='info'){const p=document.createElement('div');p.className='message '+type;p.textContent=text;$('messages').append(p);}
 function claimRows(){const order=['PS Used Car2','PS Used Car1','Google Ads'];return receipts.flatMap(r=>r.type==='google'?(r.payments||[]).map(p=>({...p,group:'Google Ads',invoice:'',note:'Google Ads',bank:r.bank})):[{...r,group:r.group||r.note}]).sort((a,b)=>{const ai=order.indexOf(a.group),bi=order.indexOf(b.group);return (ai<0?99:ai)-(bi<0?99:bi);});}
+function renderClaimRows(entries,owner,bank,defaultNote){
+ if(!entries.length)return '<tr><td colspan="9" class="empty">เพิ่มใบเสร็จเพื่อสร้างตารางเบิกจ่าย</td></tr>';
+ let html='',active='',number=0,subtotal=0,metaSubtotal=0;
+ const flush=()=>{if(active)html+=`<tr class="subtotal-row"><td colspan="6">รวม ${esc(active)}</td><td class="number">${fmt(subtotal)}</td><td colspan="2"></td></tr>`;};
+ for(const r of entries){
+  const amount=r.amount??r.total;
+  if(r.group!==active){flush();active=r.group;number=0;subtotal=0;html+=`<tr class="group-row"><td colspan="9">${esc(active)}</td></tr>`;}
+  number++;subtotal+=amount;if(r.group!=='Google Ads')metaSubtotal+=amount;
+  const first=number===1;
+  html+=`<tr><td>${number}</td><td>${first?esc(owner||'—'):''}</td><td>${first?esc(bank||r.bank||'—'):''}</td><td>${first?esc(r.card||'—'):''}</td><td>${esc(r.reference||'—')}</td><td>${esc(r.invoice||'—')}</td><td class="number">${fmt(amount)}</td><td>${esc((r.date||'').replace(/\s+\d{2}:\d{2}$/,''))}</td><td>${esc(defaultNote||r.note||r.group)}</td></tr>`;
+ }
+ flush();
+ if(metaSubtotal)html+=`<tr class="meta-total-row"><td colspan="6">รวมค่าโฆษณา Meta</td><td class="number">${fmt(metaSubtotal)}</td><td colspan="2"></td></tr>`;
+ return html;
+}
 function render(){
  const s=summarize(receipts);
  $('total').textContent='฿'+fmt(s.total);$('campaignTotal').textContent='฿'+fmt(s.campaignTotal);$('count').textContent=s.count;
@@ -15,10 +30,10 @@ function render(){
  $('areasCount').textContent=`${s.areas.length} พื้นที่`;$('campaignsCount').textContent=`${s.campaigns.length} รายการ`;
  $('areas').innerHTML=s.areas.length?s.areas.map(a=>`<div class="area"><div class="area-line"><span>${esc(a.name)}</span><b>฿${fmt(a.amount)}</b></div><div class="track"><div class="bar" style="width:${s.campaignTotal?100*a.amount/s.campaignTotal:0}%"></div></div></div>`).join(''):'<div class="empty"><span>ยังไม่มีข้อมูลพื้นที่</span><p>เพิ่มใบเสร็จเพื่อดูว่าแต่ละพื้นที่ใช้ไปเท่าไร</p></div>';
  $('campaigns').innerHTML=s.campaigns.length?s.campaigns.map(c=>`<tr><td>${esc(c.name)}</td><td class="number">${fmt(c.amount)}</td></tr>`).join(''):'<tr><td colspan="2" class="empty">ยังไม่มีรายการแคมเปญ</td></tr>';
- const owner=$('owner').value.trim(),bank=$('bank').value.trim(),defaultNote=$('defaultNote').value.trim(),entries=claimRows();let active='',number=0;
- $('claimRows').innerHTML=entries.length?entries.map(r=>{const first=r.group!==active;if(first){active=r.group;number=0;}number++;return `${first?`<tr class="group-row"><td colspan="9">${esc(r.group)}</td></tr>`:''}<tr><td>${number}</td><td>${first?esc(owner||'—'):''}</td><td>${first?esc(bank||r.bank||'—'):''}</td><td>${first?esc(r.card||'—'):''}</td><td>${esc(r.reference||'—')}</td><td>${esc(r.invoice||'—')}</td><td class="number">${fmt(r.amount??r.total)}</td><td>${esc((r.date||'').replace(/\s+\d{2}:\d{2}$/,''))}</td><td>${esc(defaultNote||r.note||r.group)}</td></tr>`}).join(''):'<tr><td colspan="9" class="empty">เพิ่มใบเสร็จเพื่อสร้างตารางเบิกจ่าย</td></tr>';
+ const owner=$('owner').value.trim(),bank=$('bank').value.trim(),defaultNote=$('defaultNote').value.trim(),entries=claimRows();
+ $('claimRows').innerHTML=renderClaimRows(entries,owner,bank,defaultNote);
  $('claimTotal').textContent=fmt(s.total);
- $('claimTitle').textContent=receipts.length?`รายการค่า Ads Facebook · ${receipts[0].date.replace(/\s+\d{2}:\d{2}$/,'')}`:'รายการค่า Ads Facebook';
+ $('claimTitle').textContent=receipts.length?`รายการค่าโฆษณา · ${receipts[0].date.replace(/\s+\d{2}:\d{2}$/,'')}`:'รายการค่าโฆษณา';
  $('receipts').innerHTML=receipts.length?receipts.map(r=>`<div class="receipt"><div><div class="receipt-name">${esc(r.filename)}</div><div class="receipt-meta">${esc(r.date)} · บัญชี ${esc(r.account)}<br>ID ${esc(r.id)}<br>${esc([...new Set(r.campaigns.map(c=>c.period))].join(' · '))}</div>${r.warnings.map(w=>`<div class="warning">${esc(w)}</div>`).join('')}</div><div class="receipt-amount">฿${fmt(r.total)}</div><button class="remove" data-id="${esc(r.id)}" aria-label="ลบ ${esc(r.filename)}">ลบไฟล์</button></div>`).join(''):'<p class="empty">ใบเสร็จที่อ่านสำเร็จจะแสดงที่นี่</p>';
 }
 async function addFiles(files){
