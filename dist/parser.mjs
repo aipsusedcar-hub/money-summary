@@ -6,7 +6,8 @@ export function normalize(s) {
 export const moneyCents=s=>Math.round(Number(s.replace(/[^\d.]/g,''))*100);
 export function parseReceipt(pages,filename) {
   const all=pages.flatMap(p=>p.items).map(i=>normalize(i.str)).join('\n');
-  if(!all.includes('Meta โฆษณา') || !all.includes('ใบเสร็จ')) throw new Error('รองรับใบเสร็จค่าโฆษณา Meta ตามรูปแบบตัวอย่างเท่านั้น');
+  if(all.includes('Google Ads')) return parseGoogle(pages,all,filename);
+  if(!all.includes('Meta โฆษณา') || !all.includes('ใบเสร็จ')) throw new Error('รองรับใบเสร็จ Meta และ Statement ของ Google Ads ตามรูปแบบตัวอย่างเท่านั้น');
   const id=all.match(/\b\d{14,22}-\d{14,22}\b/)?.[0];
   if(!id) throw new Error('ไม่พบ ID ธุรกรรม จึงยังไม่นำมารวมยอด');
   const first=pages[0].items.filter(i=>i.str.trim()).map(i=>({...i,str:normalize(i.str)}));
@@ -48,7 +49,16 @@ export function parseReceipt(pages,filename) {
   if(campaignTotal!==total) warnings.push(`ยอดแคมเปญต่างจากยอดชำระ ${(campaignTotal-total)/100} บาท`);
   if(detailTotal!==campaignTotal) warnings.push('ยอดโฆษณาย่อยไม่ตรงกับยอดแคมเปญ โปรดตรวจไฟล์ต้นฉบับ');
   if(!all.includes('ชำระแล้ว')) warnings.push('ไม่พบข้อความยืนยันว่าชำระแล้ว');
-  return {id,filename,total,date,account,reference,invoice,note,card,campaigns,campaignTotal,warnings};
+  return {type:'meta',group:note,filename,id,total,date,account,reference,invoice,note,card,bank:'American Express',campaigns,campaignTotal,warnings};
+}
+function parseGoogle(pages,all,filename){
+  const account=all.match(/บัญชี:\s*([^\n]+)/)?.[1]||'Google Ads';
+  const period=all.match(/(\d{1,2}\s+[ก-๙.]+\s+\d{4}\s*-\s*\d{1,2}\s+[ก-๙.]+\s+\d{4})/)?.[1]||'';
+  const rows=[];
+  for(const page of pages){const items=page.items.map(i=>({...i,str:normalize(i.str)}));for(const ref of items){const found=ref.str.match(/(\d{4})\s+(A\d{14,20})/);if(!found)continue;const same=items.filter(i=>Math.abs(i.transform[5]-ref.transform[5])<3);const amount=same.find(i=>/-?[\d,]+\.\d{2}$/.test(i.str)&&i.transform[4]>ref.transform[4]);if(amount)rows.push({date:'',card:found[1],reference:found[2],amount:Math.abs(moneyCents(amount.str))});}}
+  if(!rows.length)throw new Error('ไม่พบรายการชำระเงินใน Statement ของ Google Ads');
+  const total=rows.reduce((sum,row)=>sum+row.amount,0);
+  return {type:'google',group:'Google Ads',id:`google:${account}:${period}:${filename}`,filename,total,date:period,account,reference:'',invoice:'',note:'Google Ads',card:rows[0].card,bank:'American Express',payments:rows,campaigns:[{name:'Google Ads',area:'Google Ads',amount:total,period}],campaignTotal:total,warnings:[]};
 }
 export function summarize(receipts) {
   const unique=[...new Map(receipts.map(r=>[r.id,r])).values()];
