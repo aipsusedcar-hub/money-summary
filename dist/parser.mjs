@@ -54,8 +54,9 @@ export function parseReceipt(pages,filename) {
 function parseGoogle(pages,all,filename){
   const account=all.match(/บัญชี:\s*([^\n]+)/)?.[1]||'Google Ads';
   const period=all.match(/(\d{1,2}\s+[ก-๙.]+\s+\d{4}\s*-\s*\d{1,2}\s+[ก-๙.]+\s+\d{4})/)?.[1]||'';
+  const year=all.match(/\b25\d{2}\b/)?.[0]||'';
   const rows=[];
-  for(const page of pages){const items=page.items.map(i=>({...i,str:normalize(i.str)}));for(const ref of items){const found=ref.str.match(/(\d{4})\s+(A\d{14,20})/);if(!found)continue;const same=items.filter(i=>Math.abs(i.transform[5]-ref.transform[5])<3);const amount=same.find(i=>/-?[\d,]+\.\d{2}$/.test(i.str)&&i.transform[4]>ref.transform[4]);if(amount)rows.push({date:'',card:found[1],reference:found[2],amount:Math.abs(moneyCents(amount.str))});}}
+  for(const page of pages){const items=page.items.map(i=>({...i,str:normalize(i.str)}));for(const ref of items){const found=ref.str.match(/(\d{4})\s+(A\d{14,20})/);if(!found)continue;const same=items.filter(i=>Math.abs(i.transform[5]-ref.transform[5])<3);const amount=same.find(i=>/-?[\d,]+\.\d{2}$/.test(i.str)&&i.transform[4]>ref.transform[4]);const dateText=same.filter(i=>i.transform[4]<90).sort((a,b)=>a.transform[4]-b.transform[4]).map(i=>i.str).join('');const dateMatch=dateText.match(/(\d{1,2})\s*([ก-๙.]+)/);const date=dateMatch?`${dateMatch[1]} ${dateMatch[2]}${year?` ${year}`:''}`:'';if(amount)rows.push({date,card:found[1],reference:found[2],amount:Math.abs(moneyCents(amount.str))});}}
   if(!rows.length)throw new Error('ไม่พบรายการชำระเงินใน Statement ของ Google Ads');
   const total=rows.reduce((sum,row)=>sum+row.amount,0);
   return {type:'google',group:'Google Ads',id:`google:${account}:${period}:${filename}`,filename,total,date:period,account,reference:'',invoice:'',note:'Google Ads',card:rows[0].card,bank:'American Express',payments:rows,campaigns:[{name:'Google Ads',area:'Google Ads',amount:total,period}],campaignTotal:total,warnings:[]};

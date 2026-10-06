@@ -11,7 +11,8 @@
   .claim-controls label{font-size:7.5pt}
   .claim-controls input{font-size:8pt;padding:1px 0}
   .claim-table{font-size:8pt;line-height:1.12;table-layout:fixed;width:100%}
-  .claim-table th,.claim-table td{padding:4px 3px;overflow-wrap:anywhere}
+  .claim-table{border-collapse:collapse}
+  .claim-table th,.claim-table td{padding:4px 3px;overflow-wrap:anywhere;border:1px solid #aeb9c8}
   .claim-table th{font-size:8pt;line-height:1.06;white-space:normal}
   .claim-table th:nth-child(1){width:4%}.claim-table th:nth-child(2){width:12%}.claim-table th:nth-child(3){width:10%}.claim-table th:nth-child(4){width:8%}.claim-table th:nth-child(5){width:13%}.claim-table th:nth-child(6){width:18%}.claim-table th:nth-child(7){width:12%}.claim-table th:nth-child(8){width:9%}.claim-table th:nth-child(9){width:14%}
   .claim-table td:first-child,.claim-table th:first-child{width:auto}
