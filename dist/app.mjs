@@ -5,6 +5,7 @@ const $=id=>document.getElementById(id);
 const fmt=c=>new Intl.NumberFormat('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2}).format(c/100);
 const receipts=[];let busy=false;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function claimMonthTitle(receipt){const m=(receipt?.date||'').match(/\d{1,2}\s+([ก-๙.]+)\s+(\d{4})/);return m?`รายการค่า Ads Facebook เดือน ${m[1]} ${m[2]}`:'รายการค่า Ads Facebook';}
 function message(text,type='info'){const p=document.createElement('div');p.className='message '+type;p.textContent=text;$('messages').append(p);}
 function claimRows(){const order=['PS Used Car2','PS Used Car1','Google Ads'];return receipts.flatMap(r=>r.type==='google'?(r.payments||[]).map(p=>({...p,group:'Google Ads',invoice:'',note:'Google Ads',bank:r.bank})):[{...r,group:r.group||r.note}]).sort((a,b)=>{const ai=order.indexOf(a.group),bi=order.indexOf(b.group);return (ai<0?99:ai)-(bi<0?99:bi);});}
 function renderClaimRows(entries,owner,bank,defaultNote){
@@ -33,7 +34,7 @@ function render(){
  const owner=$('owner').value.trim(),bank=$('bank').value.trim(),defaultNote=$('defaultNote').value.trim(),entries=claimRows();
  $('claimRows').innerHTML=renderClaimRows(entries,owner,bank,defaultNote);
  $('claimTotal').textContent=fmt(s.total);
- $('claimTitle').textContent=receipts.length?`รายการค่าโฆษณา · ${receipts[0].date.replace(/\s+\d{2}:\d{2}$/,'')}`:'รายการค่าโฆษณา';
+ $('claimTitle').textContent=claimMonthTitle(receipts[0]);
  $('receipts').innerHTML=receipts.length?receipts.map(r=>`<div class="receipt"><div><div class="receipt-name">${esc(r.filename)}</div><div class="receipt-meta">${esc(r.date)} · บัญชี ${esc(r.account)}<br>ID ${esc(r.id)}<br>${esc([...new Set(r.campaigns.map(c=>c.period))].join(' · '))}</div>${r.warnings.map(w=>`<div class="warning">${esc(w)}</div>`).join('')}</div><div class="receipt-amount">฿${fmt(r.total)}</div><button class="remove" data-id="${esc(r.id)}" aria-label="ลบ ${esc(r.filename)}">ลบไฟล์</button></div>`).join(''):'<p class="empty">ใบเสร็จที่อ่านสำเร็จจะแสดงที่นี่</p>';
 }
 async function addFiles(files){
