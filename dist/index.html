@@ -1,79 +1,119 @@
 <!doctype html>
 <html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สรุปค่าโฆษณา · Recheck</title><meta name="description" content="ลากใบเสร็จ Meta PDF เพื่อรวมยอดชำระและแยกค่าโฆษณาตามพื้นที่และแคมเปญ"><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23132138'/%3E%3Cpath d='M8 17l5 5 11-13' fill='none' stroke='%23cff36a' stroke-width='4'/%3E%3C/svg%3E"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="claim.css"><link rel="stylesheet" href="groups.css">
 <style>
-/* บังคับคอลัมน์ไม่ให้ตัวอักษรตกบรรทัด */
-.claim-table th:first-child,
-.claim-table td:first-child {
+/* --- สไตล์แถบปุ่มสลับแท็บ --- */
+.tabs-header-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+.tab-btn-group {
+  display: flex;
+  gap: 8px;
+}
+.tab-switch-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #475569;
+  font-family: inherit;
+}
+.tab-switch-btn.active {
+  background: #0f172a;
+  color: #fff;
+  border-color: #0f172a;
+}
+.tab-panel {
+  display: none;
+}
+.tab-panel.active {
+  display: block;
+}
+
+/* --- สไตล์แท็บ 2: ใบเบิกจ่ายทางการ --- */
+.official-sheet {
+  background: #fff;
+  padding: 30px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #000;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.official-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.official-header h2 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+  color: #000;
+}
+.official-header p {
+  margin: 3px 0;
+  font-size: 14px;
+  color: #1e293b;
+}
+.official-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: #000;
+}
+.official-table th, .official-table td {
+  border: 1px solid #000;
+  padding: 6px 10px;
+  vertical-align: top;
+}
+.official-table th {
+  text-align: center;
+  font-weight: bold;
+}
+.official-table td.number, .official-table th.number {
+  text-align: right;
+  white-space: nowrap;
+}
+.official-table tfoot td {
+  font-weight: bold;
+  border-top: 2px solid #000;
+  padding: 8px 10px;
+}
+.official-table tfoot .center-label {
+  text-align: center;
+}
+
+/* ซ่อนแถวหัวกลุ่มในตารางเดิม */
+.claim-table tr.group-header,
+.claim-table tr:has(td[colspan="9"]:not(.empty)) {
+  display: none !important;
+}
+
+/* คำว่า ลำดับ ห้ามตัดคำตกบรรทัด */
+.claim-table th:first-child, .claim-table td:first-child {
   white-space: nowrap !important;
-  min-width: 45px !important;
+  width: 50px !important;
+  min-width: 50px !important;
   text-align: center !important;
 }
 
 @media print {
-  @page {
-    size: A4 portrait !important;
-    margin: 4mm 5mm !important;
-  }
-
-  html, body {
-    background: #fff !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-size: 9.5px !important;
-  }
-
-  /* ซ่อนส่วนประกอบอื่นทั้งหมด */
-  header, footer, .intro, .drop, .metrics, .workspace, 
-  .receipts, #messages, .print, .claim-note, .eyebrow {
+  header, footer, .intro, .drop, .metrics, .workspace, .receipts, #messages, .tabs-header-wrap, .claim-note {
     display: none !important;
   }
-
-  .panel.claim {
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  .claim-head {
-    margin-bottom: 2px !important;
-  }
-
-  .claim-head h2 {
-    font-size: 13px !important;
-    margin: 0 0 3px 0 !important;
-    text-align: center !important;
-  }
-
-  /* ย่อขนาดตารางทั้งตารางให้จบใน 1 หน้า A4 พอดี */
-  .claim-table-wrap {
-    border: none !important;
-    overflow: visible !important;
-    transform-origin: top center !important;
-    transform: scale(0.92) !important; /* ย่อสเกลตารางลง 8% ดึงหน้าที่ 2 กลับขึ้นมาทั้งหมด */
-    width: 108.7% !important;
-    margin-left: -4.3% !important;
-  }
-
-  .claim-table {
-    width: 100% !important;
-    font-size: 9px !important;
-    border-collapse: collapse !important;
-  }
-
-  .claim-table th, 
-  .claim-table td {
-    padding: 1.5px 3px !important; /* บีบระยะห่างแถวให้ชิด */
-    line-height: 1.15 !important;
-    border: 1px solid #999 !important;
-  }
-
-  /* แก้เลขรหัสอ้างอิงและวันที่ไม่ให้ขึ้น 2 บรรทัด */
-  .claim-table td:nth-child(5),
-  .claim-table td:nth-child(6),
-  .claim-table td:nth-child(8) {
-    white-space: nowrap !important;
-    font-size: 8.5px !important;
-  }
+  .tab-panel { display: none !important; }
+  .tab-panel.active { display: block !important; }
+  @page { size: A4 portrait; margin: 6mm 8mm !important; }
+  body { background: #fff !important; }
+  .panel.claim { border: none !important; padding: 0 !important; }
+  .official-sheet { border: none !important; padding: 0 !important; max-width: 100% !important; }
 }
 </style>
 </head>
@@ -84,61 +124,32 @@
 <section class="drop" id="drop" aria-label="เพิ่มใบเสร็จ PDF"><div class="upload-icon" aria-hidden="true">＋</div><div><h2>ลากใบเสร็จมาวางที่นี่</h2><p>PDF จาก Meta หรือ Google Ads • เพิ่มหลายไฟล์พร้อมกันได้</p></div><label class="choose" id="choose" for="files">เลือกไฟล์ PDF</label><input type="file" id="files" accept=".pdf,application/pdf" multiple><small>ไฟล์จะไม่ถูกส่งไปเก็บบนเซิร์ฟเวอร์ • ยังไม่รองรับ PDF ที่เป็นภาพสแกน</small></section>
 <div id="messages" role="status" aria-live="polite"></div>
 <section class="metrics" aria-label="สรุปยอด"><article class="metric primary"><span>ยอดชำระรวม</span><strong id="total">฿0.00</strong><small>นับแต่ละ ID ธุรกรรมเพียงครั้งเดียว</small></article><article class="metric"><span>ค่าโฆษณาตามแคมเปญ</span><strong id="campaignTotal">฿0.00</strong><small id="reconcile">รอใบเสร็จเพื่อเทียบยอด</small></article><article class="metric"><span>ใบเสร็จที่นำเข้า</span><strong><span id="count">0</span> <em>ใบ</em></strong><small id="groupCount">0 พื้นที่ · 0 แคมเปญ</small></article></section>
+
 <section class="claim panel">
-  <!-- แถบปุ่มสลับแท็บ -->
-  <div class="tabs-bar">
-    <div class="tab-buttons">
-      <button type="button" class="tab-btn active" id="tabBtnDetailed">ตารางละเอียด</button>
-      <button type="button" class="tab-btn" id="tabBtnInvoice">ใบเบิกจ่ายทางการ</button>
+  <!-- แถบสลับแท็บเอกสาร -->
+  <div class="tabs-header-wrap">
+    <div class="tab-btn-group">
+      <button type="button" class="tab-switch-btn active" id="btnTab1">ตารางละเอียด (เดิม)</button>
+      <button type="button" class="tab-switch-btn" id="btnTab2">ใบเบิกจ่ายทางการ (แบบใหม่)</button>
     </div>
     <button class="print" type="button" id="print">พิมพ์ / บันทึก PDF</button>
   </div>
 
-  <!-- แท็บ 1: ตารางละเอียดเดิม -->
-  <div id="viewDetailed" class="tab-content active">
-    <div class="claim-head">
-      <div><span class="eyebrow">เอกสารเบิกจ่าย</span><h2 id="claimTitle">รายการค่า Ads Facebook</h2></div>
-    </div>
-    <div class="claim-table-wrap">
-      <table class="claim-table">
-        <thead>
-          <tr>
-            <th>ลำดับ</th>
-            <th>ชื่อเจ้าของบัตร</th>
-            <th>ธนาคาร</th>
-            <th>เลขท้ายบัตร</th>
-            <th>อ้างอิง</th>
-            <th>ID ใบเรียกเก็บเงินภาษี<br>มูลค่าเพิ่ม</th>
-            <th class="number">จำนวนเงิน</th>
-            <th>Date</th>
-            <th>หมายเหตุ</th>
-          </tr>
-        </thead>
-        <tbody id="claimRows">
-          <tr><td colspan="9" class="empty">เพิ่มใบเสร็จเพื่อสร้างตารางเบิกจ่าย</td></tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="6">รวมเงิน (บาท)</td>
-            <td class="number" id="claimTotal">0.00</td>
-            <td colspan="2"></td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-    <p class="claim-note">ข้อมูลจากใบเสร็จ: เลขอ้างอิง, ธนาคาร/บัตร, เลขท้ายบัตร, เลขใบเรียกเก็บเงิน, จำนวนเงิน และวันที่ชำระ</p>
+  <!-- แท็บ 1: ตารางละเอียด -->
+  <div id="panelTab1" class="tab-panel active">
+    <div class="claim-head"><div><span class="eyebrow">เอกสารเบิกจ่าย</span><h2 id="claimTitle">รายการค่า Ads Facebook</h2></div></div>
+    <div class="claim-table-wrap"><table class="claim-table"><thead><tr><th>ลำดับ</th><th>ชื่อเจ้าของบัตร</th><th>ธนาคาร</th><th>เลขท้ายบัตร</th><th>อ้างอิง</th><th>ID ใบเรียกเก็บเงินภาษี<br>มูลค่าเพิ่ม</th><th class="number">จำนวนเงิน</th><th>Date</th><th>หมายเหตุ</th></tr></thead><tbody id="claimRows"><tr><td colspan="9" class="empty">เพิ่มใบเสร็จเพื่อสร้างตารางเบิกจ่าย</td></tr></tbody><tfoot><tr><td colspan="6">รวมเงิน (บาท)</td><td class="number" id="claimTotal">0.00</td><td colspan="2"></td></tr></tfoot></table></div><p class="claim-note">ข้อมูลจากใบเสร็จ: เลขอ้างอิง, ธนาคาร/บัตร, เลขท้ายบัตร, เลขใบเรียกเก็บเงิน, จำนวนเงิน และวันที่ชำระ</p>
   </div>
 
-  <!-- แท็บ 2: ใบเบิกจ่ายทางการ (แบบใหม่ตามรูป) -->
-  <div id="viewInvoice" class="tab-content">
-    <div class="invoice-sheet">
-      <div class="invoice-header">
+  <!-- แท็บ 2: ใบเบิกจ่ายทางการ -->
+  <div id="panelTab2" class="tab-panel">
+    <div class="official-sheet">
+      <div class="official-header">
         <h2>บริษัท ประเสริฐผลรุ่งเรืองนครพนม จำกัด</h2>
         <p>216/111 ถ.นิตโย ต.ในเมือง อ.เมือง จ.นครพนม 48000</p>
         <p>เลขประจำตัวผู้เสียภาษี : 0485548000108</p>
       </div>
-
-      <table class="invoice-table">
+      <table class="official-table">
         <thead>
           <tr>
             <th style="width: 10%;">ลำดับ</th>
@@ -146,21 +157,111 @@
             <th style="width: 18%;" class="number">จำนวน</th>
           </tr>
         </thead>
-        <tbody id="invoiceRows">
-          <tr><td colspan="3" class="empty" style="text-align: center; padding: 20px;">เพิ่มใบเสร็จเพื่อดูใบเบิกจ่าย</td></tr>
+        <tbody id="officialRows">
+          <tr><td colspan="3" style="text-align: center; padding: 20px;">เพิ่มใบเสร็จเพื่อสร้างใบเบิกจ่าย</td></tr>
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="2" class="total-label">รวมทั้งสิ้น</td>
-            <td class="number" id="invoiceTotal">0.00</td>
+            <td colspan="2" class="center-label">รวมทั้งสิ้น</td>
+            <td class="number" id="officialTotal">0.00</td>
           </tr>
         </tfoot>
       </table>
     </div>
   </div>
 </section>
-  
+
 <div class="workspace"><section class="panel"><div class="panel-head"><div><span class="eyebrow">ค่าโฆษณา</span><h2>แยกตามพื้นที่</h2></div><span class="badge" id="areasCount">0 พื้นที่</span></div><div id="areas" class="areas"><div class="empty"><span>ยังไม่มีข้อมูลพื้นที่</span><p>เพิ่มใบเสร็จเพื่อดูว่าแต่ละพื้นที่ใช้ไปเท่าไร</p></div></div></section><section class="panel"><div class="panel-head"><div><span class="eyebrow">รายละเอียด</span><h2>ยอดรวมแต่ละแคมเปญ</h2></div><span class="badge" id="campaignsCount">0 รายการ</span></div><div class="table-scroll"><table><thead><tr><th>แคมเปญ</th><th class="number">ค่าโฆษณา (บาท)</th></tr></thead><tbody id="campaigns"><tr><td colspan="2" class="empty">ยังไม่มีรายการแคมเปญ</td></tr></tbody></table></div></section></div>
 <section class="panel receipts"><div class="panel-head"><div><span class="eyebrow">ตรวจสอบต้นทาง</span><h2>ใบเสร็จที่รวมในยอด</h2></div></div><div id="receipts"><p class="empty">ใบเสร็จที่อ่านสำเร็จจะแสดงที่นี่</p></div></section>
 <footer>รวมเฉพาะยอดที่ระบุในใบเสร็จ ไม่คำนวณภาษีเพิ่ม <span>ข้อมูลจะหายเมื่อรีเฟรชหรือปิดหน้านี้</span></footer>
-</main><script type="module" src="app.mjs"></script></body></html>
+</main>
+<script type="module" src="app.mjs"></script>
+<script>
+// สคริปต์สลับแท็บและคำนวณบิลทางการอัตโนมัติ
+document.addEventListener('DOMContentLoaded', () => {
+  const btn1 = document.getElementById('btnTab1');
+  const btn2 = document.getElementById('btnTab2');
+  const panel1 = document.getElementById('panelTab1');
+  const panel2 = document.getElementById('panelTab2');
+
+  btn1.addEventListener('click', () => {
+    btn1.classList.add('active');
+    btn2.classList.remove('active');
+    panel1.classList.add('active');
+    panel2.classList.remove('active');
+  });
+
+  btn2.addEventListener('click', () => {
+    btn2.classList.add('active');
+    btn1.classList.remove('active');
+    panel2.classList.add('active');
+    panel1.classList.remove('active');
+    buildOfficialInvoice();
+  });
+
+  function buildOfficialInvoice() {
+    const rows = Array.from(document.querySelectorAll('#claimRows tr'));
+    const validRows = rows.filter(tr => !tr.querySelector('.empty') && tr.children.length >= 7);
+    const tbody = document.getElementById('officialRows');
+    const totalEl = document.getElementById('officialTotal');
+
+    if (validRows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">เพิ่มใบเสร็จเพื่อสร้างใบเบิกจ่าย</td></tr>';
+      totalEl.textContent = '0.00';
+      return;
+    }
+
+    const groups = {};
+    let grandTotal = 0;
+
+    validRows.forEach(tr => {
+      const tds = tr.children;
+      const amtStr = tds[6]?.textContent?.replace(/,/g, '').trim() || '0';
+      const amt = parseFloat(amtStr) || 0;
+      const dateText = tds[7]?.textContent?.trim() || '';
+      const noteText = tds[8]?.textContent?.trim() || 'Facebook';
+
+      if (!groups[noteText]) {
+        groups[noteText] = { name: noteText, items: [], sampleDate: dateText };
+      }
+      groups[noteText].items.push(amt);
+      grandTotal += amt;
+    });
+
+    let html = '';
+    let idx = 1;
+
+    for (const key in groups) {
+      const g = groups[key];
+      const match = g.sampleDate.match(/([ก-๙]+)\s*(\d{4})/);
+      const mText = match ? `${match[1]} ${match[2]}` : '';
+
+      let descHtml = `<b>ค่า Ads Facebook เดือน${mText} (${g.name})</b><br><br>`;
+      descHtml += `-รวมทั้งหมด ${g.items.length} รายการ<br>`;
+      let amtHtml = `<br><br>`;
+
+      g.items.forEach(val => {
+        const valFormatted = val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        descHtml += `รายละ ${valFormatted} บาท จำนวน 1 รายการ<br>`;
+        amtHtml += `${valFormatted}<br>`;
+      });
+
+      html += `<tr>
+        <td style="text-align: center;">${idx++}</td>
+        <td style="line-height: 1.6;">${descHtml}</td>
+        <td class="number" style="line-height: 1.6;">${amtHtml}</td>
+      </tr>`;
+    }
+
+    tbody.innerHTML = html;
+    totalEl.textContent = grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // อัปเดตบิลให้อัตโนมัติเมื่อไฟล์ถูกนำเข้า
+  const target = document.getElementById('claimRows');
+  if (target) {
+    new MutationObserver(() => buildOfficialInvoice()).observe(target, { childList: true });
+  }
+});
+</script>
+</body></html>
