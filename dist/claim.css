@@ -1,3 +1,4 @@
+/* --- สไตล์หน้าเว็บปกติ --- */
 .claim {
   margin-top: 1.5rem;
 }
@@ -34,20 +35,12 @@
   padding: 6px 8px;
   border-bottom: 1px solid var(--border, #e2e8f0);
   vertical-align: middle;
-  box-sizing: border-box;
 }
 
-/* ป้องกัน ลำดับ และ วันที่ ตกบรรทัด */
 .claim-table th:first-child,
 .claim-table td:first-child {
   white-space: nowrap !important;
-  min-width: 42px;
-  text-align: center;
-}
-
-.claim-table th:nth-child(8),
-.claim-table td:nth-child(8) {
-  white-space: nowrap !important;
+  width: 48px !important;
   text-align: center;
 }
 
@@ -69,10 +62,15 @@
 }
 
 /* ==============================================================
-   ตั้งค่าพิมพ์ / บันทึก PDF ให้อยู่พอดีใน 1 หน้า A4 ไม่ล้นเด็ดขาด
+   คำสั่ง Print: บังคับให้อยู่ใน 1 หน้า A4 เสมอ (Fit to 1 Page)
    ============================================================== */
 @media print {
-  /* ซ่อนส่วนที่ไม่เกี่ยวข้อง */
+  @page {
+    size: A4 portrait;
+    margin: 4mm 6mm !important; /* ขอบกระดาษชิดสุด */
+  }
+
+  /* ซ่อนส่วนที่ไม่ได้ใช้พิมพ์ */
   header,
   footer,
   .intro,
@@ -87,17 +85,13 @@
     display: none !important;
   }
 
-  @page {
-    size: A4 portrait;
-    margin: 5mm 6mm !important; /* ขอบกระดาษบางพิเศษ */
-  }
-
   html, body {
+    width: 100% !important;
+    height: auto !important;
     background: #fff !important;
     color: #000 !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 100% !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -116,57 +110,68 @@
   }
 
   .claim-head {
-    margin-bottom: 2px !important;
-    justify-content: center !important;
+    margin: 0 0 2px 0 !important;
     text-align: center !important;
+    display: block !important;
   }
 
   .claim-head h2 {
     font-size: 11pt !important;
-    font-weight: bold !important;
     margin: 0 0 2px 0 !important;
-    line-height: 1.2 !important;
+    text-align: center !important;
   }
 
   .claim-table-wrap {
-    border: 1px solid #1e293b !important;
-    border-radius: 0 !important;
+    border: none !important;
     overflow: visible !important;
   }
 
+  /* บีบขนาดทั้งตาราง */
   .claim-table {
     width: 100% !important;
-    font-size: 7.2pt !important; /* ปรับขนาดฟอนต์ให้กะทัดรัด */
+    font-size: 6.8pt !important; /* ย่อขนาดฟอนต์ให้บรรจุข้อมูลได้ทั้งหมด */
     border-collapse: collapse !important;
-    line-height: 1.05 !important;
+    line-height: 1 !important;
   }
 
   .claim-table th,
   .claim-table td {
-    padding: 1.2px 3px !important; /* บีบความสูงแต่ละแถวให้ชิด */
-    border: 1px solid #cbd5e1 !important;
-    height: 16px !important;
+    padding: 1px 2px !important; /* บีบ padding แถวให้ชิดกันสุด */
+    border: 0.5px solid #94a3b8 !important;
+    height: auto !important;
+    vertical-align: middle !important;
   }
 
-  /* ป้องกันเลข ID และรหัสอ้างอิงตัดบรรทัด เช่น A13431970672246 - 46 */
+  /* คอลัมน์ลำดับ ป้องกันคำว่า ลำดับ หักสองท่อน */
+  .claim-table th:first-child,
+  .claim-table td:first-child {
+    white-space: nowrap !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    text-align: center !important;
+  }
+
+  /* คอลัมน์อ้างอิง และ ID ใบเสร็จ บังคับบรรทัดเดียว */
   .claim-table td:nth-child(5),
   .claim-table td:nth-child(6) {
     white-space: nowrap !important;
-    font-size: 6.8pt !important;
-    letter-spacing: -0.2px;
+    font-size: 6.2pt !important;
+    letter-spacing: -0.3px !important;
   }
 
-  /* คอลัมน์วันที่บีบฟอนต์ไม่ให้แตกสองบรรทัด */
+  /* คอลัมน์วันที่ บังคับบรรทัดเดียว */
+  .claim-table th:nth-child(8),
   .claim-table td:nth-child(8) {
     white-space: nowrap !important;
-    font-size: 6.8pt !important;
-    padding: 1px 2px !important;
+    font-size: 6.4pt !important;
+    text-align: center !important;
   }
 
-  .claim-table th {
-    background-color: #f1f5f9 !important;
-    font-weight: 600 !important;
-    padding: 2px 3px !important;
+  /* คอลัมน์ยอดเงิน */
+  .claim-table td.number,
+  .claim-table th.number {
+    white-space: nowrap !important;
+    font-size: 6.8pt !important;
   }
 
   .claim-table tr {
@@ -175,9 +180,8 @@
   }
 
   .claim-table tfoot td {
-    border-top: 1.5px solid #000 !important;
-    padding: 2px 3px !important;
-    font-size: 7.5pt !important;
     font-weight: bold !important;
+    padding: 2px !important;
+    border-top: 1.5px solid #000 !important;
   }
 }
