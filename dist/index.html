@@ -84,7 +84,82 @@
 <section class="drop" id="drop" aria-label="เพิ่มใบเสร็จ PDF"><div class="upload-icon" aria-hidden="true">＋</div><div><h2>ลากใบเสร็จมาวางที่นี่</h2><p>PDF จาก Meta หรือ Google Ads • เพิ่มหลายไฟล์พร้อมกันได้</p></div><label class="choose" id="choose" for="files">เลือกไฟล์ PDF</label><input type="file" id="files" accept=".pdf,application/pdf" multiple><small>ไฟล์จะไม่ถูกส่งไปเก็บบนเซิร์ฟเวอร์ • ยังไม่รองรับ PDF ที่เป็นภาพสแกน</small></section>
 <div id="messages" role="status" aria-live="polite"></div>
 <section class="metrics" aria-label="สรุปยอด"><article class="metric primary"><span>ยอดชำระรวม</span><strong id="total">฿0.00</strong><small>นับแต่ละ ID ธุรกรรมเพียงครั้งเดียว</small></article><article class="metric"><span>ค่าโฆษณาตามแคมเปญ</span><strong id="campaignTotal">฿0.00</strong><small id="reconcile">รอใบเสร็จเพื่อเทียบยอด</small></article><article class="metric"><span>ใบเสร็จที่นำเข้า</span><strong><span id="count">0</span> <em>ใบ</em></strong><small id="groupCount">0 พื้นที่ · 0 แคมเปญ</small></article></section>
-<section class="claim panel"><div class="claim-head"><div><span class="eyebrow">เอกสารเบิกจ่าย</span><h2 id="claimTitle">รายการค่า Ads Facebook</h2></div><button class="print" type="button" id="print">พิมพ์ / บันทึก PDF</button></div><div class="claim-table-wrap"><table class="claim-table"><thead><tr><th>ลำดับ</th><th>ชื่อเจ้าของบัตร</th><th>ธนาคาร</th><th>เลขท้ายบัตร</th><th>อ้างอิง</th><th>ID ใบเรียกเก็บเงินภาษี<br>มูลค่าเพิ่ม</th><th class="number">จำนวนเงิน</th><th>Date</th><th>หมายเหตุ</th></tr></thead><tbody id="claimRows"><tr><td colspan="9" class="empty">เพิ่มใบเสร็จเพื่อสร้างตารางเบิกจ่าย</td></tr></tbody><tfoot><tr><td colspan="6">รวมเงิน (บาท)</td><td class="number" id="claimTotal">0.00</td><td colspan="2"></td></tr></tfoot></table></div><p class="claim-note">ข้อมูลจากใบเสร็จ: เลขอ้างอิง, ธนาคาร/บัตร, เลขท้ายบัตร, เลขใบเรียกเก็บเงิน, จำนวนเงิน และวันที่ชำระ</p></section>
+<section class="claim panel">
+  <!-- แถบปุ่มสลับแท็บ -->
+  <div class="tabs-bar">
+    <div class="tab-buttons">
+      <button type="button" class="tab-btn active" id="tabBtnDetailed">ตารางละเอียด</button>
+      <button type="button" class="tab-btn" id="tabBtnInvoice">ใบเบิกจ่ายทางการ</button>
+    </div>
+    <button class="print" type="button" id="print">พิมพ์ / บันทึก PDF</button>
+  </div>
+
+  <!-- แท็บ 1: ตารางละเอียดเดิม -->
+  <div id="viewDetailed" class="tab-content active">
+    <div class="claim-head">
+      <div><span class="eyebrow">เอกสารเบิกจ่าย</span><h2 id="claimTitle">รายการค่า Ads Facebook</h2></div>
+    </div>
+    <div class="claim-table-wrap">
+      <table class="claim-table">
+        <thead>
+          <tr>
+            <th>ลำดับ</th>
+            <th>ชื่อเจ้าของบัตร</th>
+            <th>ธนาคาร</th>
+            <th>เลขท้ายบัตร</th>
+            <th>อ้างอิง</th>
+            <th>ID ใบเรียกเก็บเงินภาษี<br>มูลค่าเพิ่ม</th>
+            <th class="number">จำนวนเงิน</th>
+            <th>Date</th>
+            <th>หมายเหตุ</th>
+          </tr>
+        </thead>
+        <tbody id="claimRows">
+          <tr><td colspan="9" class="empty">เพิ่มใบเสร็จเพื่อสร้างตารางเบิกจ่าย</td></tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="6">รวมเงิน (บาท)</td>
+            <td class="number" id="claimTotal">0.00</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="claim-note">ข้อมูลจากใบเสร็จ: เลขอ้างอิง, ธนาคาร/บัตร, เลขท้ายบัตร, เลขใบเรียกเก็บเงิน, จำนวนเงิน และวันที่ชำระ</p>
+  </div>
+
+  <!-- แท็บ 2: ใบเบิกจ่ายทางการ (แบบใหม่ตามรูป) -->
+  <div id="viewInvoice" class="tab-content">
+    <div class="invoice-sheet">
+      <div class="invoice-header">
+        <h2>บริษัท ประเสริฐผลรุ่งเรืองนครพนม จำกัด</h2>
+        <p>216/111 ถ.นิตโย ต.ในเมือง อ.เมือง จ.นครพนม 48000</p>
+        <p>เลขประจำตัวผู้เสียภาษี : 0485548000108</p>
+      </div>
+
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th style="width: 10%;">ลำดับ</th>
+            <th style="width: 72%;">รายการ</th>
+            <th style="width: 18%;" class="number">จำนวน</th>
+          </tr>
+        </thead>
+        <tbody id="invoiceRows">
+          <tr><td colspan="3" class="empty" style="text-align: center; padding: 20px;">เพิ่มใบเสร็จเพื่อดูใบเบิกจ่าย</td></tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" class="total-label">รวมทั้งสิ้น</td>
+            <td class="number" id="invoiceTotal">0.00</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</section>
+  <section class="claim panel"><div class="claim-head"><div><span class="eyebrow">เอกสารเบิกจ่าย</span><h2 id="claimTitle">รายการค่า Ads Facebook</h2></div><button class="print" type="button" id="print">พิมพ์ / บันทึก PDF</button></div><div class="claim-table-wrap"><table class="claim-table"><thead><tr><th>ลำดับ</th><th>ชื่อเจ้าของบัตร</th><th>ธนาคาร</th><th>เลขท้ายบัตร</th><th>อ้างอิง</th><th>ID ใบเรียกเก็บเงินภาษี<br>มูลค่าเพิ่ม</th><th class="number">จำนวนเงิน</th><th>Date</th><th>หมายเหตุ</th></tr></thead><tbody id="claimRows"><tr><td colspan="9" class="empty">เพิ่มใบเสร็จเพื่อสร้างตารางเบิกจ่าย</td></tr></tbody><tfoot><tr><td colspan="6">รวมเงิน (บาท)</td><td class="number" id="claimTotal">0.00</td><td colspan="2"></td></tr></tfoot></table></div><p class="claim-note">ข้อมูลจากใบเสร็จ: เลขอ้างอิง, ธนาคาร/บัตร, เลขท้ายบัตร, เลขใบเรียกเก็บเงิน, จำนวนเงิน และวันที่ชำระ</p></section>
 <div class="workspace"><section class="panel"><div class="panel-head"><div><span class="eyebrow">ค่าโฆษณา</span><h2>แยกตามพื้นที่</h2></div><span class="badge" id="areasCount">0 พื้นที่</span></div><div id="areas" class="areas"><div class="empty"><span>ยังไม่มีข้อมูลพื้นที่</span><p>เพิ่มใบเสร็จเพื่อดูว่าแต่ละพื้นที่ใช้ไปเท่าไร</p></div></div></section><section class="panel"><div class="panel-head"><div><span class="eyebrow">รายละเอียด</span><h2>ยอดรวมแต่ละแคมเปญ</h2></div><span class="badge" id="campaignsCount">0 รายการ</span></div><div class="table-scroll"><table><thead><tr><th>แคมเปญ</th><th class="number">ค่าโฆษณา (บาท)</th></tr></thead><tbody id="campaigns"><tr><td colspan="2" class="empty">ยังไม่มีรายการแคมเปญ</td></tr></tbody></table></div></section></div>
 <section class="panel receipts"><div class="panel-head"><div><span class="eyebrow">ตรวจสอบต้นทาง</span><h2>ใบเสร็จที่รวมในยอด</h2></div></div><div id="receipts"><p class="empty">ใบเสร็จที่อ่านสำเร็จจะแสดงที่นี่</p></div></section>
 <footer>รวมเฉพาะยอดที่ระบุในใบเสร็จ ไม่คำนวณภาษีเพิ่ม <span>ข้อมูลจะหายเมื่อรีเฟรชหรือปิดหน้านี้</span></footer>
