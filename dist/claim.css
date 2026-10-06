@@ -185,3 +185,157 @@
     border-top: 1.5px solid #000 !important;
   }
 }
+/* --- แถบปุ่มสลับแท็บ --- */
+.tabs-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.75rem;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tab-btn {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  color: #475569;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.tab-btn.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* --- แท็บ 2: ใบเบิกจ่ายทางการ --- */
+.invoice-sheet {
+  background: #fff;
+  padding: 2.5rem 3rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  max-width: 860px;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.invoice-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #000;
+}
+
+.invoice-header h2 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0 0 6px 0;
+}
+
+.invoice-header p {
+  margin: 3px 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  color: #000;
+}
+
+.invoice-table th,
+.invoice-table td {
+  border: 1px solid #000;
+  padding: 6px 10px;
+  vertical-align: top;
+}
+
+.invoice-table th {
+  text-align: center;
+  font-weight: bold;
+  background: #fff;
+}
+
+.invoice-table td.number,
+.invoice-table th.number {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.invoice-table .sub-line {
+  line-height: 1.6;
+}
+
+.invoice-table tfoot td {
+  font-weight: bold;
+  border-top: 1.5px solid #000;
+  padding: 8px 10px;
+}
+
+.invoice-table tfoot .total-label {
+  text-align: center;
+}
+
+/* --- ตั้งค่าพิมพ์ (Print A4) --- */
+@media print {
+  .tabs-bar {
+    display: none !important;
+  }
+
+  .tab-content {
+    display: none !important;
+  }
+
+  .tab-content.active {
+    display: block !important;
+  }
+
+  .invoice-sheet {
+    border: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+  }
+
+  .invoice-header h2 {
+    font-size: 13.5pt !important;
+  }
+
+  .invoice-header p {
+    font-size: 10pt !important;
+  }
+
+  .invoice-table {
+    font-size: 9pt !important;
+  }
+
+  .invoice-table th,
+  .invoice-table td {
+    padding: 3.5px 6px !important;
+  }
+}
