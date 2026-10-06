@@ -6,6 +6,7 @@
   @page{size:A4 portrait;margin:7mm}
   body{font-size:8.5pt}
   .claim-head{display:block;padding:0 0 7px;text-align:center}
+  .claim-controls{display:none!important}
   .claim-head h2{font-size:13pt;margin:0;font-weight:700}
   .claim-controls{padding:4px 0 7px}
   .claim-controls label{font-size:7.5pt}
